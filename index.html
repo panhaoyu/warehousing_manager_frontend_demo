@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>接口示例页面</title>
+</head>
+<body>
+<p>Token: <span id="token">Loading ...</span></p>
+<p>User: <span id="username">Loading ...</span></p>
+<p>User: <span id="real_name">Loading ...</span></p>
+<script>
+    const SITE = 'http://wms.panhaoyu.com/';
+    (async () => {
+        //首先根据账密从服务器获取token
+        let response = await fetch(`${SITE}jwt/obtain/`, {
+            mode: "cors",
+            method: "POST",
+            body: JSON.stringify({
+                'username': 'apitestuser',
+                'password': 'api.test.user.PW',
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        let data = await response.json()
+        const token = data['token']
+        document.querySelector('#token').textContent = token
+
+        // 查询用户接口
+        response = await fetch(`${SITE}user/1/`, {
+            mode: "cors",
+            method: "GET",
+            headers: {
+                'authorization': `JWT ${token}`,
+                'content-type': 'application/json',
+            }
+        })
+        data = await response.json()
+        document.querySelector('#username').textContent = data['username']
+        document.querySelector('#real_name').textContent = data['real_name']
+
+    })()
+</script>
+</body>
+</html>
